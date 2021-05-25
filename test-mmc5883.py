@@ -14,10 +14,6 @@ mmc = MMC5883()
 if args.output:
     outfile = open(args.output, "w")
 
-if args.output:
-    outfile.write(output)
-    outfile.write('\n')
-
 while True:
     data = mmc.measure()
     output = f"{time()} 1 {data.x_raw} {data.y_raw} {data.z_raw} {data.t_raw} {data.x} {data.y} {data.z} {data.t}"
