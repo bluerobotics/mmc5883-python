@@ -2,6 +2,7 @@
 
 import argparse
 from mmc5883 import MMC5883
+import signal
 from time import sleep, time
 
 parser = argparse.ArgumentParser(description='mmc5883 test')
@@ -11,20 +12,26 @@ args = parser.parse_args()
 
 mmc = MMC5883()
 
+outfile = None
+
 if args.output:
     outfile = open(args.output, "w")
+
+def cleanup(_signo, _stack):
+    if outfile:
+        outfile.close()
+    exit(0)
+
+
+signal.signal(signal.SIGTERM, cleanup)
+signal.signal(signal.SIGINT, cleanup)
 
 while True:
     data = mmc.measure()
     output = f"{time()} 1 {data.x_raw} {data.y_raw} {data.z_raw} {data.t_raw} {data.x} {data.y} {data.z} {data.t}"
     print(output)
-    if args.output:
+    if outfile:
         outfile.write(output)
         outfile.write('\n')
     if args.frequency:
         sleep(1.0/args.frequency)
-
-# this is never reached, but works anyway in practice
-# todo handle KeyboardInterrupt for ctrl+c
-if args.output:
-    outfile.close()
