@@ -2,36 +2,26 @@
 
 import argparse
 from mmc5883 import MMC5883
-import signal
-from time import sleep, time
+from pathlib import Path
+import llog
+import time
 
-parser = argparse.ArgumentParser(description='mmc5883 test')
+device = "mmc5883"
+defaultMeta = Path(__file__).resolve().parent / f"{device}.meta"
+
+parser = argparse.ArgumentParser(description=f'{device} test')
 parser.add_argument('--output', action='store', type=str, default=None)
+parser.add_argument('--meta', action='store', type=str, default=defaultMeta)
 parser.add_argument('--frequency', action='store', type=int, default=None)
 args = parser.parse_args()
 
-mmc = MMC5883()
 
-outfile = None
+with llog.LLogWriter(args.meta, args.output) as log:
+    mmc = MMC5883()
 
-if args.output:
-    outfile = open(args.output, "w")
-
-def cleanup(_signo, _stack):
-    if outfile:
-        outfile.close()
-    exit(0)
-
-
-signal.signal(signal.SIGTERM, cleanup)
-signal.signal(signal.SIGINT, cleanup)
-
-while True:
-    data = mmc.measure()
-    output = f"{time()} 1 {data.x_raw} {data.y_raw} {data.z_raw} {data.t_raw} {data.x} {data.y} {data.z} {data.t}"
-    print(output)
-    if outfile:
-        outfile.write(output)
-        outfile.write('\n')
-    if args.frequency:
-        sleep(1.0/args.frequency)
+    while True:
+        data = mmc.measure()
+        log.log(llog.LLOG_DATA, f"{data.x_raw} {data.y_raw} {data.z_raw} {data.t_raw} {data.x} {data.y} {data.z} {data.t}")
+        
+        if args.frequency:
+            time.sleep(1.0/args.frequency)
