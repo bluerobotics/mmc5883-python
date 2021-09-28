@@ -9,7 +9,7 @@ def main():
     args = parser.parse_args()
 
 
-    with llog.LLogWriter(args.meta, args.output) as log:
+    with LLogWriter(args.meta, args.output) as log:
         mmc = MMC5883()
 
         def data_getter():
