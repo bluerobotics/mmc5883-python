@@ -46,7 +46,7 @@
     ]
   },
   "2": {
-    "llType": "configuration"
+    "llType": "configuration",
     "columns": [
       {
         "llabel": "bandwidth",
@@ -55,7 +55,7 @@
     ]
   },
   "4": {
-    "llType": "calibration"
+    "llType": "calibration",
     "columns": [
       {
         "llabel": "xOffset",
@@ -73,4 +73,6 @@
         "llabel": "tOffset",
         "dtype": "float"
       }
+    ]
+  }
 }
